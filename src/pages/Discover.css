@@ -1,0 +1,37 @@
+.status { color: var(--muted); margin-top: 16px; }
+
+.book-grid {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 18px;
+}
+
+.book {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+.book__cover {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  display: block;
+  background: var(--primary-soft);
+}
+
+.book__cover--empty {
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.book__body { padding: 12px 14px 16px; }
+.book__title { font-size: 0.98rem; line-height: 1.25; }
+.book__meta { font-size: 0.82rem; color: var(--muted); margin-top: 4px; }
