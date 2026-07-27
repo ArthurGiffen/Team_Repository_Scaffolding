@@ -1,0 +1,31 @@
+.book-detail {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 32px;
+}
+
+@media (max-width: 560px) {
+  .book-detail { grid-template-columns: 1fr; }
+}
+
+.book-detail__cover {
+  width: 100%;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  background: var(--primary-soft);
+}
+
+.book-detail__cover--empty {
+  aspect-ratio: 2 / 3;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+
+.book-detail__shelf {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  max-width: 360px;
+}

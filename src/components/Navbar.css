@@ -38,3 +38,13 @@
   background: var(--primary-soft);
   color: var(--primary);
 }
+
+.nav__logout {
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+.nav__logout:hover { color: var(--primary); }

@@ -1,19 +1,34 @@
 import './About.css'
 
-// Team bios. Each member edits their own entry below.
-// That gives everyone a simple commit to make.
+// Real team roster (JAB TECH). Each person should replace their own `bio`
+// with an actual one-liner about themselves — that's intentionally left as
+// a placeholder here since only you know what you want it to say.
 const members = [
-  { name: 'Member One', role: 'Frontend', bio: 'Replace with your bio.' },
-  { name: 'Member Two', role: 'Backend', bio: 'Replace with your bio.' },
-  { name: 'Member Three', role: 'Database', bio: 'Replace with your bio.' },
-  { name: 'Member Four', role: 'Design / QA', bio: 'Replace with your bio.' },
+  {
+    name: 'Boris Hernandez',
+    github: '@Boris713',
+    role: 'Backend / API',
+    bio: 'Add your own one-line bio here.',
+  },
+  {
+    name: 'Arthur Giffen',
+    github: '@ArthurGiffen',
+    role: 'Frontend Integration',
+    bio: 'Add your own one-line bio here.',
+  },
+  {
+    name: 'Jun Brooks',
+    github: '@junbug23',
+    role: 'Database & Auth',
+    bio: 'Add your own one-line bio here.',
+  },
 ]
 
 function About() {
   return (
     <section>
       <h1>Meet the Team</h1>
-      <p className="lead">The people building Shelf.</p>
+      <p className="lead">JAB TECH — the people building Shelf.</p>
 
       <div className="team">
         {members.map((m) => (
@@ -21,6 +36,14 @@ function About() {
             <h3 className="member__name">{m.name}</h3>
             <span className="member__role">{m.role}</span>
             <p className="member__bio">{m.bio}</p>
+            <a
+              className="member__github"
+              href={`https://github.com/${m.github.replace('@', '')}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {m.github}
+            </a>
           </article>
         ))}
       </div>

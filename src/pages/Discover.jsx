@@ -1,39 +1,76 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { api } from '../api/client'
 import './Discover.css'
 
-// API handshake: on load, fetch the Open Library API (free, no key),
-// log the results, and show the books. This proves the network works.
-const SAMPLE_QUERY =
-  'https://openlibrary.org/search.json?q=the+lord+of+the+rings&fields=key,title,author_name,first_publish_year,cover_i&limit=8'
+// Encodes an Open Library work key like "/works/OL45804W" down to just
+// "OL45804W" so it reads cleanly as a route param (see BookDetail.jsx).
+function shortKey(olKey) {
+  return olKey.replace('/works/', '')
+}
 
 function Discover() {
+  const [query, setQuery] = useState('')
   const [books, setBooks] = useState([])
-  const [status, setStatus] = useState('Loading...')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [searched, setSearched] = useState(false)
 
-  useEffect(() => {
-    fetch(SAMPLE_QUERY)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log('API handshake OK. Open Library returned:', data.docs)
-        setBooks(data.docs)
-        setStatus('')
-      })
-      .catch((err) => {
-        console.error('Handshake failed:', err)
-        setStatus('Could not reach the Open Library API.')
-      })
-  }, [])
+  async function handleSubmit(e) {
+    e.preventDefault()
+    if (!query.trim()) return
+
+    setLoading(true)
+    setError(null)
+    setSearched(true)
+
+    try {
+      // Goes through our own Express proxy (/api/books/search), not
+      // Open Library directly — the server attaches the required
+      // User-Agent header and is the single point where we could add
+      // caching later.
+      const results = await api.searchBooks(query.trim())
+      setBooks(results)
+    } catch (err) {
+      setError(err.message)
+      setBooks([])
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <section>
       <h1>Discover</h1>
-      <p className="lead">Sample results from the Open Library API.</p>
+      <p className="lead">Search for a book by title or author.</p>
 
-      {status && <p className="status">{status}</p>}
+      <form className="search" onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Try “the hobbit” or “octavia butler”"
+          aria-label="Search books"
+        />
+        <button type="submit" disabled={loading || !query.trim()}>
+          {loading ? 'Searching…' : 'Search'}
+        </button>
+      </form>
+
+      {loading && <p className="status">Loading…</p>}
+      {error && <p className="status status--error">{error}</p>}
+      {!loading && !error && searched && books.length === 0 && (
+        <p className="status">No books matched that search.</p>
+      )}
 
       <div className="book-grid">
         {books.map((book) => (
-          <article className="book" key={book.key}>
+          <Link
+            className="book"
+            key={book.key}
+            to={`/books/${shortKey(book.key)}`}
+            state={{ book }}
+          >
             {book.cover_i ? (
               <img
                 className="book__cover"
@@ -51,7 +88,7 @@ function Discover() {
                 {book.first_publish_year ? `, ${book.first_publish_year}` : ''}
               </p>
             </div>
-          </article>
+          </Link>
         ))}
       </div>
     </section>
