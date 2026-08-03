@@ -2,11 +2,22 @@
 
 We will update this doc as we progress.
 
-A minimal React single-page app for our capstone: client-side routing with a
-persistent navbar, an organized `components` / `pages` structure, and a
-`useEffect` fetch to the Open Library API that proves our data connection works.
+A React single-page app for our capstone, backed by an Express + MongoDB API:
+client-side routing with a persistent navbar, JWT auth, and a book search /
+shelf-tracking flow with real persistence.
 
 ## Run it
+
+Backend first, in one terminal:
+
+```bash
+cd server
+npm install
+cp .env.example .env    # fill in MONGODB_URI and JWT_SECRET, see below
+npm run dev              # http://localhost:4000
+```
+
+Frontend, in another terminal from the repo root:
 
 ```bash
 npm install
@@ -15,18 +26,50 @@ npm run dev      # open the http://localhost:5173 link it prints
 
 ## What's here
 
-- **Organized structure:** `src/components/` (presentation, e.g. `Navbar`) vs
-  `src/pages/` (routed page targets: `Home`, `Discover`, `About`).
-- **Router tree:** `react-router-dom` with 3 routes - `/` (Home), `/discover`,
-  `/about` (Team). The `Navbar` sits outside `<Routes>` in `App.jsx`, so it stays
-  put across views with no full-page reloads.
-- **API handshake:** `pages/Discover.jsx` runs a `useEffect` on mount that
-  fetches the Open Library search API (free, no key), console-logs the results
-  array (open DevTools to see it), and displays book covers on screen. In the
-  capstone this becomes a live search box; the fetch logic stays the same.
+- **Organized structure:** `src/components/` (presentation, e.g. `Navbar`,
+  `AddToShelfForm`) vs `src/pages/` (routed page targets: `Home`, `Discover`,
+  `BookDetail`, `MyShelves`, `Login`, `Register`, `About`) vs `server/`
+  (Express + Mongoose API).
+- **Router tree:** `react-router-dom`, with `MyShelves` gated behind
+  `PrivateRoute` so you have to be logged in to see it. The `Navbar` sits
+  outside `<Routes>` in `App.jsx`, so it stays put across views with no
+  full-page reloads.
+- **Auth:** `AuthContext` holds onto the JWT you get back from
+  `/api/auth/login` or `/api/auth/register`, and `src/api/client.js` attaches
+  it to requests and sends you to `/login` if one ever comes back 401.
+- **API handshake:** `pages/Discover.jsx` submits a search that hits our own
+  `GET /api/books/search` instead of calling Open Library directly - the
+  Express server proxies it so it can attach the User-Agent header Open
+  Library asks for. From there you can open a book and shelve it with
+  `AddToShelfForm`.
+
+## Backend setup
+
+`server/.env` needs:
+
+- **MONGODB_URI** - we're using a free [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register)
+  cluster; grab your own connection string from there. Local instead:
+  `mongodb://127.0.0.1:27017/shelf`.
+- **JWT_SECRET** - any long random string.
+
+You should see `[db] MongoDB connected` and `[server] listening on
+http://localhost:4000` once it's running.
+
+## Endpoints
+
+| Method | Path                      | Auth | Notes                                                           |
+| ------ | ------------------------- | ---- | --------------------------------------------------------------- |
+| POST   | `/api/auth/register`      | no   | creates the account, returns a JWT                              |
+| POST   | `/api/auth/login`         | no   | checks the password, returns a JWT                              |
+| GET    | `/api/books/search?q=...` | no   | proxies Open Library                                            |
+| POST   | `/api/shelf-entries`      | yes  | saves the book (first time it's seen) and adds it to your shelf |
+| GET    | `/api/shelf-entries`      | yes  | your shelf, newest first (`?status=` to filter)                 |
+| PATCH  | `/api/shelf-entries/:id`  | yes  | update one of your own entries                                  |
+| DELETE | `/api/shelf-entries/:id`  | yes  | remove one of your own entries                                  |
 
 ## Data source
 
 [Open Library API](https://openlibrary.org/developers/api) (Internet Archive) -
-free, no API key. Search: `openlibrary.org/search.json?q=...`. Covers:
-`covers.openlibrary.org/b/id/<cover_i>-M.jpg`.
+free, no API key. Proxied through our Express server rather than called
+directly from the browser. User accounts and shelf entries persist in
+MongoDB via that same server.
