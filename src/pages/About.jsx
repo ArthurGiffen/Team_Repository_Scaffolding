@@ -1,26 +1,20 @@
 import './About.css'
 
-// Real team roster (JAB TECH). Each person should replace their own `bio`
-// with an actual one-liner about themselves — that's intentionally left as
-// a placeholder here since only you know what you want it to say.
 const members = [
   {
     name: 'Boris Hernandez',
     github: '@Boris713',
     role: 'Backend / API',
-    bio: 'Add your own one-line bio here.',
   },
   {
     name: 'Arthur Giffen',
     github: '@ArthurGiffen',
     role: 'Frontend Integration',
-    bio: 'Add your own one-line bio here.',
   },
   {
     name: 'Jun Brooks',
     github: '@junbug23',
     role: 'Database & Auth',
-    bio: 'Add your own one-line bio here.',
   },
 ]
 
