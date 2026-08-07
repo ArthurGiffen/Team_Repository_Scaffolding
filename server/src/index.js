@@ -8,7 +8,10 @@ const shelfEntriesRoutes = require('./routes/shelfEntries.routes');
 const booksRoutes = require('./routes/books.routes');
 
 const app = express();
-app.use(cors());
+
+// In production set FRONTEND_URL to the deployed frontend's origin so only
+// it can call this API. Left open in local dev for convenience.
+app.use(cors({ origin: process.env.FRONTEND_URL || true }));
 app.use(express.json());
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
