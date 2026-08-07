@@ -4,17 +4,17 @@ const members = [
   {
     name: 'Boris Hernandez',
     github: '@Boris713',
-    role: 'Backend / API',
+    role: 'Backend / Authentication',
   },
   {
     name: 'Arthur Giffen',
     github: '@ArthurGiffen',
-    role: 'Frontend Integration',
+    role: 'Database & Backend',
   },
   {
     name: 'Jun Brooks',
     github: '@junbug23',
-    role: 'Database & Auth',
+    role: 'Frontend Integration',
   },
 ]
 
@@ -29,7 +29,6 @@ function About() {
           <article className="member" key={m.name}>
             <h3 className="member__name">{m.name}</h3>
             <span className="member__role">{m.role}</span>
-            <p className="member__bio">{m.bio}</p>
             <a
               className="member__github"
               href={`https://github.com/${m.github.replace('@', '')}`}
